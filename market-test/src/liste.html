@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Ma liste de course</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <header class="navbar">
+        <div class="container">
+          <div class="logo">COURSESAPP</div>
+          <nav>
+            <a href="/src/liste.html">Liste de course</a>
+            <a href="/index.html">Produits disponibles</a>
+  
+          </nav>
+        </div>
+      </header>
+
+    <!-- Titre -->
+    <main class="container">
+      <h2>Ma liste de course</h2>
+
+      <!-- Tableau des produits -->
+      <table>
+        <thead>
+          <tr>
+            <th>Produit</th>
+            <th>PU (€)</th>
+            <th>Quantité</th>
+            <th>Sous-total</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="liste-course-body">
+          <!-- JavaScript -->
+        </tbody>
+      </table>
+
+      <!-- Total général -->
+      <p><strong>Total général :</strong> <span id="total-general">0.00 €</span></p>
+
+      <!-- Vider la liste -->
+      <button id="vider-liste">VIDER LA LISTE</button>
+    </main>
+    <div id="toast-container" class="toast-container"></div>
+
+    <script type="module" src="/src/liste.js"></script>
+  </body>
+</html>

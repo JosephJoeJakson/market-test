@@ -114,24 +114,137 @@ body {
   background: #433f69;
 }
 
-.view-more-wrapper {
-  display: flex;
-  justify-content: center;
-  margin: 2rem 0;
+.card.epuise {
+  opacity: 0.5;
+  pointer-events: none;
 }
 
-.view-more-btn {
-  background: #3b82f6;
+.card.epuise button {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.toast-container {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 0.5rem;
+  z-index: 1000;
+  max-width: 300px;
+}
+
+.toast {
+  background-color: #333;
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  opacity: 0;
+  animation: fadeIn 0.3s forwards;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* Toast types */
+.toast.success {
+  background-color: #10b981;
+}
+.toast.error {
+  background-color: #ef4444;
+}
+.toast.info {
+  background-color: #3b82f6;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+
+/* Titre de section */
+h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Tableau des produits */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  margin-bottom: 2rem;
+}
+
+th, td {
+  text-align: left;
+  padding: 1rem;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+thead {
+  background-color: #f9fafb;
+}
+
+input[type="number"] {
+  width: 60px;
+  padding: 0.4rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+/* Bouton supprimer (ligne) */
+.btn-supprimer {
+  background-color: #ef4444;
   color: white;
   border: none;
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  font-weight: bold;
+  padding: 0.5rem 0.75rem;
   border-radius: 8px;
   cursor: pointer;
+  font-weight: 600;
   transition: background 0.2s ease;
 }
 
-.view-more-btn:hover {
-  background: #2563eb;
+.btn-supprimer:hover {
+  background-color: #dc2626;
 }
+
+/* Total général */
+#total-general {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+/* Bouton vider la liste */
+#vider-liste {
+  background: white;
+  border: 2px solid #ef4444;
+  color: #ef4444;
+  font-weight: bold;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  float: right;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+#vider-liste:hover {
+  background-color: #ef4444;
+  color: white;
+}
+
