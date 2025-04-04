@@ -1,38 +1,58 @@
-// La liste des produits
-const listeProduits = document.getElementById("liste-produits");
-// Le compteur avec le nombre total de produits
-const compteurProduits = document.getElementById("compteur-produits");
-// La barre de recherche
-const rechercheInput = document.getElementById("recherche");
-// Le select avec le tri
-const triSelect = document.getElementById("tri");
-// Le bouton pour rest les filtres
-const resetFiltres = document.getElementById("reset-filtres");
+// Accès dynamique aux éléments DOM
+const getListeProduits = () => document.getElementById("liste-produits");
+const getCompteurProduits = () => document.getElementById("compteur-produits");
+const getRechercheInput = () => document.getElementById("recherche");
+const getTriSelect = () => document.getElementById("tri");
+const getResetFiltres = () => document.getElementById("reset-filtres");
+const getToastContainer = () => document.getElementById("toast-container");
 
-// Tableau avec tous les produits
+// État global simulé — defined as let but wrapped via Proxy later
 let produits = [];
 let produitsFiltres = [];
 
-// Le chargement des produtis
+/**
+ * Wrap array setters in a proxy to keep assignment in sync
+ */
+const __TEST__ = {};
+
+Object.defineProperties(__TEST__, {
+  produits: {
+    get: () => produits,
+    set: (value) => {
+      produits.length = 0;
+      produits.push(...value);
+    },
+  },
+  produitsFiltres: {
+    get: () => produitsFiltres,
+    set: (value) => {
+      produitsFiltres.length = 0;
+      produitsFiltres.push(...value);
+    },
+  },
+});
+
 const chargerProduits = async () => {
   try {
     const response = await fetch("/liste_produits_quotidien.json");
     const data = await response.json();
-    produits = data;
-    produitsFiltres = [...produits];
+    __TEST__.produits = data;
+    __TEST__.produitsFiltres = [...data];
     afficherProduits();
   } catch (error) {
     console.error("Erreur lors du chargement :", error);
   }
 };
 
-// L'affichage des produits 
 const afficherProduits = () => {
+  const listeProduits = getListeProduits();
+  const compteurProduits = getCompteurProduits();
+  if (!listeProduits || !compteurProduits) return;
+
   listeProduits.innerHTML = "";
 
   produitsFiltres.forEach(produit => {
     const item = document.createElement("li");
-
     const isOutOfStock = produit.quantite_stock <= 0;
 
     item.innerHTML = `
@@ -52,7 +72,6 @@ const afficherProduits = () => {
 
   compteurProduits.textContent = `${produitsFiltres.length} produit${produitsFiltres.length > 1 ? "s" : ""}`;
 
-  // Lier les boutons
   document.querySelectorAll("button[data-produit]").forEach(btn => {
     btn.addEventListener("click", e => {
       const produit = JSON.parse(e.currentTarget.dataset.produit);
@@ -61,13 +80,11 @@ const afficherProduits = () => {
   });
 };
 
-
-// Filter les boutons
 const filtrerProduits = () => {
-  const recherche = rechercheInput.value.toLowerCase();
-  const tri = triSelect.value;
+  const recherche = getRechercheInput()?.value.toLowerCase() || "";
+  const tri = getTriSelect()?.value || "nom";
 
-  produitsFiltres = produits
+  __TEST__.produitsFiltres = __TEST__.produits
     .filter(p => p.nom.toLowerCase().includes(recherche))
     .sort((a, b) => {
       if (tri === "prix") return a.prix_unitaire - b.prix_unitaire;
@@ -80,43 +97,33 @@ const filtrerProduits = () => {
 const ajouterALaListe = produit => {
   const liste = JSON.parse(localStorage.getItem("liste_courses") || "[]");
 
-  // Trouver le produit dans la liste existante
   const index = liste.findIndex(p => p.nom === produit.nom);
-
   if (index !== -1) {
     liste[index].quantite += 1;
   } else {
     liste.push({ ...produit, quantite: 1 });
   }
 
-  // Réduction du stock
   const stockIndex = produits.findIndex(p => p.nom === produit.nom);
 
   if (stockIndex !== -1) {
     if (produits[stockIndex].quantite_stock > 0) {
       produits[stockIndex].quantite_stock -= 1;
 
-      // Si stock atteint 0 après l'ajout
       if (produits[stockIndex].quantite_stock === 0) {
         afficherToast("Produit en rupture de stock !");
-        
-        const cartes = document.querySelectorAll(".card");
-
-        cartes.forEach(card => {
+        document.querySelectorAll(".card").forEach(card => {
           if (card.querySelector("h2").textContent === produit.nom) {
             card.classList.add("epuise");
             const btn = card.querySelector("button");
             btn.disabled = true;
             btn.textContent = "Indisponible";
-
             const stockText = card.querySelector("p");
             stockText.innerHTML = "<strong>Quantité en stock :</strong> Stock épuisé";
           }
         });
       } else {
-        // Mettre à jour visuellement le stock affiché si > 0
-        const cartes = document.querySelectorAll(".card");
-        cartes.forEach(card => {
+        document.querySelectorAll(".card").forEach(card => {
           if (card.querySelector("h2").textContent === produit.nom) {
             const stockText = card.querySelector("p");
             stockText.innerHTML = `<strong>Quantité en stock :</strong> ${produits[stockIndex].quantite_stock}`;
@@ -124,21 +131,17 @@ const ajouterALaListe = produit => {
         });
       }
 
-      // Sauvegarder dans le localStorage
       localStorage.setItem("liste_courses", JSON.stringify(liste));
       afficherToast(`${produit.nom} ajouté à la liste !`, "success");
-
     } else {
       afficherToast("Ce produit est déjà en rupture de stock !");
-      return;
     }
   }
 };
 
-
-// Toast
 const afficherToast = (message, type = "info") => {
-  const container = document.getElementById("toast-container");
+  const container = getToastContainer();
+  if (!container) return;
 
   const toast = document.createElement("div");
   toast.className = `toast ${type}`;
@@ -159,15 +162,29 @@ const afficherToast = (message, type = "info") => {
   }
 };
 
+const initialiserListeners = () => {
+  const rechercheInput = getRechercheInput();
+  const triSelect = getTriSelect();
+  const resetFiltres = getResetFiltres();
 
+  if (!rechercheInput || !triSelect || !resetFiltres) return;
 
-rechercheInput.addEventListener("input", filtrerProduits);
-triSelect.addEventListener("change", filtrerProduits);
-resetFiltres.addEventListener("click", () => {
-  rechercheInput.value = "";
-  triSelect.value = "nom";
-  produitsFiltres = [...produits];
-  afficherProduits();
-});
+  rechercheInput.addEventListener("input", filtrerProduits);
+  triSelect.addEventListener("change", filtrerProduits);
+  resetFiltres.addEventListener("click", () => {
+    rechercheInput.value = "";
+    triSelect.value = "nom";
+    __TEST__.produitsFiltres = [...__TEST__.produits];
+    afficherProduits();
+  });
+};
 
-chargerProduits();
+if (typeof window !== "undefined" && typeof document !== "undefined") {
+  document.addEventListener("DOMContentLoaded", () => {
+    initialiserListeners();
+    chargerProduits();
+  });
+}
+
+export { afficherProduits, filtrerProduits, ajouterALaListe, initialiserListeners };
+export { __TEST__ };
