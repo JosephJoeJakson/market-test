@@ -57,11 +57,11 @@ const afficherProduits = () => {
 
     item.innerHTML = `
       <div class="card ${isOutOfStock ? "epuise" : ""}">
-        <h2 class="h2">${produit.nom}</h2>
+      <h2 class="nom-produit h2">${produit.nom}</h2>
         <p><strong>Quantité en stock :</strong> 
           ${isOutOfStock ? "Stock épuisé" : produit.quantite_stock}
         </p>
-        <p><strong>Prix unitaire :</strong> ${produit.prix_unitaire.toFixed(2)} €</p>
+        <p><strong>Prix unitaire :</strong> <span class="prix-produit">${produit.prix_unitaire.toFixed(2)}</span> €</p>
         <button class="btn" ${isOutOfStock ? "disabled" : ""} data-produit='${JSON.stringify(produit)}'>
           ${isOutOfStock ? "Indisponible" : "AJOUTER À LA LISTE"}
         </button>
