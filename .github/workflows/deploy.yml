@@ -17,7 +17,7 @@ jobs:
         with:
           node-version: 18
 
-      - name: Installer les dépendances
+      - name: Installer les dépendance
         run: npm install
 
       - name: Lancer les tests unitaires (Jest)
