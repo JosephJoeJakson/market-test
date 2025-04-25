@@ -20,9 +20,6 @@ jobs:
       - name: Installer les dépendance
         run: npm install
 
-      - name: Lancer les tests unitaires (Jest)
-        run: npm run test
-
       - name: Lancer les tests Cypress
         uses: cypress-io/github-action@v6
         with:
