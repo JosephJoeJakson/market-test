@@ -17,7 +17,7 @@ jobs:
         with:
           node-version: 18
 
-      - name: Installer les dépendance
+      - name: Installer les dépendances
         run: npm install
 
       - name: Lancer les tests Cypress
